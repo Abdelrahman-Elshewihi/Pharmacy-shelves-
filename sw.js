@@ -1,5 +1,5 @@
 /* يخلي التطبيق يشتغل بدون إنترنت. الشبكة أولاً (عشان تعديلاتك تظهر فوراً)، والكاش احتياطي. */
-const CACHE = 'pharmacy-shelves-v2';
+const CACHE = 'pharmacy-shelves-v3';
 self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', 'index.html', 'manifest.webmanifest', 'icon.svg']).catch(() => {}))); });
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== CACHE).map(x => caches.delete(x)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {
