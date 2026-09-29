@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070b12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>أرفف الصيدلية</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/home.css">
+<link rel="stylesheet" href="styles/detail.css">
+</head>
+<body>
+<div class="ambient"></div>
+
+<main class="app">
+  <header class="top">
+    <h1>أرفف الصيدلية</h1>
+    <p>نظرة سريعة على محتويات المكان</p>
+  </header>
+  <section class="list" id="list" aria-label="الأرفف"></section>
+</main>
+
+<section class="detail" id="detail" hidden role="dialog" aria-modal="true">
+  <div class="bgnum" id="bgnum" aria-hidden="true"></div>
+  <div class="toast" id="toast" role="status"></div>
+  <div class="dhead">
+    <button class="iconbtn" id="back" aria-label="رجوع"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+    <h2 id="dtitle"></h2>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+  </div>
+  <div class="dscroll" id="dscroll"><div class="dbody" id="dbody"></div></div>
+  <input type="file" id="file" accept="image/*" hidden>
+</section>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/db.js"></script>
+<script src="js/store.js"></script>
+<script src="js/card.js"></script>
+<script src="js/detail.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
