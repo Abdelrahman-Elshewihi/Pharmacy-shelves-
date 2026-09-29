@@ -43,5 +43,8 @@ App.utils = (() => {
     if (!blob) { urls.delete(key); return null; }
     const url = URL.createObjectURL(blob); urls.set(key, { blob, url }); return url;
   }
-  return { $, pad, el, ago, processImage, urlFor };
+  const tick = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch {} }; // اهتزاز خفيف
+  const light = (c, x, y) => { const r = c.getBoundingClientRect(); const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2);
+    c.style.setProperty('--mx', (x - r.left) + 'px'); c.style.setProperty('--my', (y - r.top) + 'px'); c.style.setProperty('--ang', (Math.atan2(dy, dx) * 180 / Math.PI + 90) + 'deg'); };
+  return { $, pad, el, ago, processImage, urlFor, tick, light };
 })();

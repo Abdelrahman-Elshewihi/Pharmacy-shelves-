@@ -7,7 +7,7 @@ App.db = (() => {
     r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
   });
   const run = async (mode, fn) => {
-    db = db || await open();
+    db = db || await open(); db.onversionchange = () => { db.close(); db = null; };
     return new Promise((res, rej) => {
       const t = db.transaction('shelves', mode), rq = fn(t.objectStore('shelves'));
       t.oncomplete = () => res(rq && rq.result); t.onerror = t.onabort = () => rej(t.error);
