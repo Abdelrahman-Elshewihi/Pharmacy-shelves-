@@ -16,7 +16,7 @@
 <style>
 /* ================= tokens ================= */
 :root{
-  --text:#eaf2fc; --dim:#93a7c2; --faint:#5f7390;
+  --text:#fff; --dim:rgba(255,255,255,.82); --faint:rgba(255,255,255,.6);
   --accent:#8fdcff; --orange:#ff8a3d; --accent-soft:rgba(127,214,255,.16); --warn:#e8c26a;
   --out:cubic-bezier(.2,.9,.25,1);
   --spring:cubic-bezier(.34,1.45,.64,1);
@@ -59,8 +59,6 @@ body.lock .orb{animation-play-state:paused}
 .rim::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.2px;pointer-events:none;opacity:.75;
   background:conic-gradient(from var(--ang,215deg),rgba(255,255,255,.95),rgba(255,255,255,.04) 24%,rgba(255,255,255,.5) 50%,rgba(255,255,255,.04) 76%,rgba(255,255,255,.95));
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
-/* انكسار حقيقي للخلفية (كروم/أندرويد) على العناصر الصغيرة فقط عشان الأداء */
-.lgx .refract{-webkit-backdrop-filter:url(#lg) saturate(1.7) brightness(1.12);backdrop-filter:url(#lg) saturate(1.7) brightness(1.12)}
 
 /* ================= الرئيسية ================= */
 .app{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:calc(var(--sat) + 72px) 18px calc(var(--sab) + 44px)}
@@ -72,10 +70,19 @@ body.lock .orb{animation-play-state:paused}
   -webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
 .bar-title{font-weight:500;font-size:17px;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .5s var(--spring)}
 .scrolled .bar-bg{opacity:1}.scrolled .bar-title{opacity:1;transform:none}
-.pill{display:flex;align-items:center;gap:10px;padding:8px 15px;border-radius:99px;font-size:13px;color:var(--dim)}
-.pill i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .4s var(--spring)}
-.pill i.on{background:var(--accent);box-shadow:0 0 8px var(--accent);transform:scale(1.25)}
-.pill span{color:var(--text);margin-inline-start:4px;font-variant-numeric:tabular-nums}
+.pill{display:flex;align-items:center;gap:2px;padding-inline:14px 6px;border-radius:99px;font-size:13px;color:var(--text)}
+.cnt{font-variant-numeric:tabular-nums;font-weight:500;min-width:34px;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.track{position:relative;display:flex;align-items:center;height:40px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}
+.track.grab{cursor:grabbing}
+.track button{position:relative;z-index:1;flex:none;width:22px;height:40px;display:grid;place-items:center}
+.track button::after{content:"";width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);transition:background .3s,transform .5s var(--spring),box-shadow .3s}
+.track button.on::after{background:#fff;transform:scale(1.25)}
+.track button.done::after{background:var(--accent);box-shadow:0 0 9px var(--accent)}
+.lens{position:absolute;z-index:0;left:0;top:50%;width:38px;height:38px;margin-top:-19px;border-radius:50%;pointer-events:none;will-change:transform;
+  background:radial-gradient(circle at 30% 22%,rgba(255,255,255,.75),rgba(255,255,255,.14) 42%,rgba(255,255,255,.06) 62%,rgba(255,255,255,.24));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.75),inset 2px 3px 4px rgba(255,255,255,.6),inset -2px -4px 6px rgba(255,255,255,.25),0 0 18px rgba(143,220,255,.5),0 10px 18px -6px rgba(0,0,0,.55);transition:background .25s}
+.track.grab .lens{background:radial-gradient(circle at 30% 22%,rgba(255,255,255,.6),rgba(255,255,255,.04) 45%,rgba(255,255,255,.02) 65%,rgba(255,255,255,.2))}
+.top h1,.top p,.meta small,.stamp,.notes span,.empty-frame span{text-shadow:0 1px 12px rgba(0,0,0,.45)}
 .top h1{margin:0;font-size:36px;font-weight:500;letter-spacing:-.01em}
 .top p{margin:6px 0 0;color:var(--dim);font-size:15px;font-weight:300}
 .list{display:grid;gap:14px;margin-top:26px;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))}
@@ -127,14 +134,8 @@ body.lock .orb{animation-play-state:paused}
 .iconbtn:active{transform:scale(.86);transition-duration:.1s}
 .iconbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .dhead h2{margin:0;font-size:22px;font-weight:500;flex:1}
-.dots{position:relative;display:flex;padding:0 8px;border-radius:99px}
-.dots button{position:relative;z-index:1;padding:14px 4px}
-.dots button::after{content:"";display:block;width:6px;height:6px;border-radius:50%;background:var(--faint);transition:all .5s var(--spring)}
-.dots .on::after{background:#fff;transform:scale(1.2)}
-.lens{position:absolute;z-index:0;left:0;top:50%;width:36px;height:36px;margin-top:-18px;border-radius:50%;pointer-events:none;will-change:transform;
-  background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.55),rgba(255,255,255,.08) 55%,rgba(255,255,255,.16));
-  -webkit-backdrop-filter:blur(1px) saturate(2) brightness(1.25);backdrop-filter:blur(1px) saturate(2) brightness(1.25);
-  box-shadow:inset 0 0 0 1.2px rgba(255,255,255,.7),inset 2px 3px 3px rgba(255,255,255,.7),inset -2px -3px 4px rgba(255,255,255,.25),0 0 16px rgba(255,255,255,.3),0 8px 16px -4px rgba(0,0,0,.55)}
+.dots{padding:0 8px;border-radius:99px}
+.pill .track{padding:0 2px}
 .dscroll{position:relative;z-index:1;flex:1;overflow-y:auto;overscroll-behavior:contain;padding:8px 16px calc(var(--sab) + 40px)}
 .dbody{max-width:1000px;margin:0 auto;display:grid;gap:16px}
 .side{display:grid;gap:12px}
@@ -165,22 +166,12 @@ body.lock .orb{animation-play-state:paused}
 </style>
 </head>
 <body>
-<!-- فلتر الانكسار الزجاجي (Liquid Glass) -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<filter id="lg" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-  <feGaussianBlur in="SourceGraphic" stdDeviation="2.4" result="b"/>
-  <feImage result="mx" preserveAspectRatio="none" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cdefs%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-color='rgb(0,0,0)'/%3E%3Cstop offset='.3' stop-color='rgb(128,0,0)'/%3E%3Cstop offset='.7' stop-color='rgb(128,0,0)'/%3E%3Cstop offset='1' stop-color='rgb(255,0,0)'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='256' height='256' fill='url(%23g)'/%3E%3C/svg%3E"/>
-  <feImage result="my" preserveAspectRatio="none" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='rgb(0,0,0)'/%3E%3Cstop offset='.3' stop-color='rgb(0,128,0)'/%3E%3Cstop offset='.7' stop-color='rgb(0,128,0)'/%3E%3Cstop offset='1' stop-color='rgb(0,255,0)'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='256' height='256' fill='url(%23g)'/%3E%3C/svg%3E"/>
-  <feBlend in="mx" in2="my" mode="screen" result="map"/>
-  <feDisplacementMap in="b" in2="map" scale="34" xChannelSelector="R" yChannelSelector="G"/>
-</filter></defs></svg>
-
 <div class="ambient"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="orb o4"></div></div>
 
 <header class="bar">
   <div class="bar-bg"></div>
   <span class="bar-title">أرفف الصيدلية</span>
-  <div class="pill glass rim refract" id="progress"></div>
+  <div class="pill glass rim" id="progress"><span class="cnt" id="cnt" dir="ltr"></span><div class="track" id="ptrack"></div></div>
 </header>
 
 <main class="app">
@@ -193,11 +184,11 @@ body.lock .orb{animation-play-state:paused}
 
 <section class="detail" id="detail" hidden role="dialog" aria-modal="true">
   <div class="bgnum" id="bgnum" aria-hidden="true"></div>
-  <div class="toast glass rim refract" id="toast" role="status"></div>
+  <div class="toast glass rim" id="toast" role="status"></div>
   <div class="dhead">
-    <button class="iconbtn glass rim refract" id="back" aria-label="رجوع"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="iconbtn glass rim" id="back" aria-label="رجوع"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
     <h2 id="dtitle"></h2>
-    <div class="dots glass rim refract" id="dots"></div>
+    <div class="track dots glass rim" id="dots"></div>
   </div>
   <div class="dscroll" id="dscroll"><div class="dbody" id="dbody"></div></div>
   <input type="file" id="file" accept="image/*" hidden>
@@ -207,6 +198,7 @@ body.lock .orb{animation-play-state:paused}
 <script src="js/utils.js"></script>
 <script src="js/db.js"></script>
 <script src="js/store.js"></script>
+<script src="js/scrub.js"></script>
 <script src="js/card.js"></script>
 <script src="js/detail.js"></script>
 <script src="js/main.js"></script>
