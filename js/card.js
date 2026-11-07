@@ -11,7 +11,7 @@ App.card = (() => {
   }
   function progress() {
     const sh = App.store.shelves, n = sh.filter(done).length;
-    prog.innerHTML = sh.map(s => `<i class="${done(s) ? 'on' : ''}"></i>`).join('') + `<span>${n} / ${sh.length}</span>`;
+    prog.innerHTML = sh.map(s => `<i class="${done(s) ? 'on' : ''}"></i>`).join('') + `<span dir="ltr">${n} / ${sh.length}</span>`;
     prog.setAttribute('aria-label', `${n} من ${sh.length} أرفف متوثّقة`);
   }
   function create(s, i = 0, instant) {

@@ -19,10 +19,10 @@ App.detail = (() => {
   // عدسة زجاجية بتنزلق بين النقط وبتتمطّط أثناء الحركة (زي سويتش الفيديو) — transform بس = خفيفة
   function lens(anim) {
     const d = $('#dots'), l = d.querySelector('.lens'), b = d.children[cur]; if (!l || !b || detail.hidden) return;
-    const x = b.offsetLeft + b.offsetWidth / 2 - 13; l.style.transform = `translateX(${x}px)`;
+    const x = b.offsetLeft + b.offsetWidth / 2 - 18; l.style.transform = `translateX(${x}px)`;
     if (anim && lastX !== null && lastX !== x) l.animate([
       { transform: `translateX(${lastX}px) scale(1,1)` },
-      { transform: `translateX(${(lastX + x) / 2}px) scale(${1 + Math.min(Math.abs(x - lastX) / 36, 1.3)},.8)`, offset: .45 },
+      { transform: `translateX(${(lastX + x) / 2}px) scale(${1 + Math.min(Math.abs(x - lastX) / 36, 1.3)},.82)`, offset: .45 },
       { transform: `translateX(${x}px) scale(1,1)` }], { duration: 430, easing: 'cubic-bezier(.34,1.3,.64,1)' });
     lastX = x;
   }
