@@ -1,0 +1,11 @@
+{
+  "name": "أرفف الصيدلية",
+  "short_name": "الأرفف",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#050722",
+  "theme_color": "#050722",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
