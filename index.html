@@ -26,7 +26,7 @@
 @supports (transition-timing-function:linear(0,1)){:root{--spring:linear(0,.009,.035 2.1%,.141,.281 6.7%,.723 12.9%,.938 16.7%,1.017,1.077,1.121,1.149 24.3%,1.159,1.163,1.161,1.154 29.9%,1.129 32.8%,1.051 39.6%,1.017 43.1%,.991,.977 51%,.974 53.8%,.975 57.1%,.997 69.8%,1.003 76.9%,1)}}
 *,*::before,*::after{box-sizing:inherit;-webkit-tap-highlight-color:transparent}
 html,body{margin:0}
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:#050722}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:#03040c}
 body{min-height:100dvh;color:var(--text);overflow-x:hidden;
   font-family:'Readex Pro',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif}
 body.lock{overflow:hidden}
@@ -34,13 +34,17 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 /* ================= الخلفية: أضواء بتتحرك ببطء (transform فقط = خفيفة) ================= */
-.ambient{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:linear-gradient(180deg,#050722,#0b1450 60%,#08103a)}
-.orb{position:absolute;border-radius:50%;width:72vmax;height:72vmax;will-change:transform;animation:drift 30s ease-in-out infinite alternate}
-.o1{background:radial-gradient(circle,rgba(36,104,255,.7),transparent 62%);top:-30vmax;inset-inline-end:-26vmax}
-.o2{background:radial-gradient(circle,rgba(150,80,255,.55),transparent 62%);bottom:-30vmax;inset-inline-start:-30vmax;animation-duration:38s;animation-delay:-9s}
-.o3{background:radial-gradient(circle,rgba(255,110,40,.5),transparent 62%);top:34vh;inset-inline-end:-46vmax;width:58vmax;height:58vmax;animation-duration:46s;animation-delay:-16s}
-.o4{background:radial-gradient(circle,rgba(20,200,255,.4),transparent 62%);top:6vh;inset-inline-start:-40vmax;width:52vmax;height:52vmax;animation-duration:52s;animation-delay:-24s}
-@keyframes drift{to{transform:translate3d(-12vmax,10vmax,0) scale(1.15)}}
+.ambient{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#03040c}
+.orb{position:absolute;border-radius:50%;will-change:transform;animation:drift 22s ease-in-out infinite alternate}
+.o1{width:80vmax;height:80vmax;left:-36vmax;top:8vh;--dx:26vmax;--dy:-14vh;
+  background:radial-gradient(circle at 32% 30%,#3df0ff 0,#2f7bff 36%,#5a3cff 58%,#7a2bff 64%,rgba(122,43,255,0) 72%)}
+.o2{width:70vmax;height:70vmax;right:-34vmax;top:-12vh;--dx:-22vmax;--dy:26vh;animation-duration:27s;animation-delay:-8s;
+  background:radial-gradient(circle at 60% 40%,#ffc21a 0,#ff8a1f 40%,#ff4d1f 62%,rgba(255,77,31,0) 72%)}
+.o3{width:64vmax;height:64vmax;right:-30vmax;bottom:-22vh;--dx:-30vmax;--dy:-26vh;animation-duration:31s;animation-delay:-14s;
+  background:radial-gradient(circle at 50% 50%,#ff5a2a 0,#ff3d2e 45%,#d12a6a 62%,rgba(209,42,106,0) 72%)}
+.o4{width:62vmax;height:62vmax;left:-24vmax;bottom:-26vh;--dx:24vmax;--dy:-22vh;animation-duration:35s;animation-delay:-20s;
+  background:radial-gradient(circle at 40% 40%,#22d3ff 0,#2563ff 45%,#6d2bff 64%,rgba(109,43,255,0) 72%)}
+@keyframes drift{to{transform:translate3d(var(--dx),var(--dy),0) scale(1.12)}}
 body.lock .orb{animation-play-state:paused}
 
 /* ================= Liquid Glass ================= */
@@ -64,7 +68,7 @@ body.lock .orb{animation-play-state:paused}
   padding:calc(var(--sat) + 10px) 16px 12px;pointer-events:none}
 .bar>*{pointer-events:auto}
 .bar-bg{position:absolute;inset:0;z-index:-1;opacity:0;transition:opacity .35s;pointer-events:none;
-  background:linear-gradient(rgba(5,7,34,.78),rgba(5,7,34,0));-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);
+  background:linear-gradient(rgba(3,4,12,.7),rgba(3,4,12,0));-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);
   -webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
 .bar-title{font-weight:500;font-size:17px;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .5s var(--spring)}
 .scrolled .bar-bg{opacity:1}.scrolled .bar-title{opacity:1;transform:none}
@@ -77,21 +81,25 @@ body.lock .orb{animation-play-state:paused}
 .list{display:grid;gap:14px;margin-top:26px;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))}
 
 .card{position:relative;display:block;width:100%;height:200px;text-align:start;overflow:hidden;isolation:isolate;border-radius:30px;
-  background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.04));
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),inset 2px 2px 1px -1px rgba(255,255,255,.5),inset -2px -2px 1px -1px rgba(255,255,255,.2),0 20px 40px -18px rgba(0,0,0,.75);
+  background:linear-gradient(150deg,rgba(255,255,255,.2),rgba(255,255,255,.04) 50%,rgba(255,255,255,.1));
+  -webkit-backdrop-filter:blur(12px) saturate(1.7) brightness(1.05);backdrop-filter:blur(12px) saturate(1.7) brightness(1.05);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),inset 2px 2px 1px -1px rgba(255,255,255,.5),inset -2px -2px 1px -1px rgba(255,255,255,.2),0 20px 40px -18px rgba(0,0,0,.75);
   transition:transform .55s var(--spring)}
 .card:active{transform:scale(.96);transition-duration:.12s}
 .card::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .3s;
   background:radial-gradient(240px circle at var(--mx,50%) var(--my,0%),rgba(160,220,255,.22),transparent 65%)}
+.card:has(.media img) .scrim{opacity:1}
+.card .meta,.card .num{text-shadow:0 1px 14px rgba(0,0,0,.35)}
 .card.lit::after{opacity:1}
 @media (hover:hover){.card:hover::after{opacity:1}}
 .card::before{z-index:4}
 .card .media{position:absolute;inset:0;z-index:0}
 .card .media img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .4s}
 .card .media img.on{opacity:1}
-.card .scrim{position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(5,9,16,.9) 0%,rgba(5,9,16,.35) 55%,rgba(5,9,16,.08) 100%)}
+.card:has(.media img){-webkit-backdrop-filter:none;backdrop-filter:none}
+.card .scrim{opacity:0;position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(5,9,16,.9) 0%,rgba(5,9,16,.35) 55%,rgba(5,9,16,.08) 100%)}
 .ph{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;gap:14px;padding-inline:0 26px}
-.ph i{display:block;height:5px;border-radius:5px;background:linear-gradient(90deg,rgba(255,255,255,.16),transparent)}
+.ph i{display:block;height:5px;border-radius:5px;background:linear-gradient(90deg,rgba(255,255,255,.3),transparent)}
 .ph i:nth-child(1){width:52%}.ph i:nth-child(2){width:38%}.ph i:nth-child(3){width:46%}
 .num{position:absolute;z-index:2;top:8px;inset-inline-start:22px;font-size:74px;font-weight:200;line-height:1.1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;
   background:linear-gradient(180deg,#fff 20%,rgba(190,220,255,.3));-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -108,9 +116,11 @@ body.lock .orb{animation-play-state:paused}
 @keyframes enter{from{opacity:0;transform:translateY(22px) scale(.96)}}
 
 /* ================= شاشة الرف ================= */
-.detail{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;overflow:hidden;will-change:clip-path;background:linear-gradient(180deg,#0a1042,#050722)}
+.detail{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;overflow:hidden;will-change:clip-path;background:#03040c}
 .detail[hidden]{display:none}
-.detail::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(60vmax 44vmax at 85% 0%,rgba(40,110,255,.5),transparent 62%),radial-gradient(54vmax 44vmax at 0% 100%,rgba(255,110,40,.34),transparent 62%),radial-gradient(48vmax 40vmax at 0% 30%,rgba(150,80,255,.3),transparent 62%)}
+.detail::before{content:"";position:absolute;inset:-20%;pointer-events:none;will-change:transform;animation:d2 30s ease-in-out infinite alternate;
+  background:radial-gradient(40vmax 40vmax at 78% 12%,#ff9a1f,rgba(255,90,30,.5) 55%,transparent 72%),radial-gradient(46vmax 46vmax at 18% 38%,#2fd5ff,#3a5bff 50%,rgba(110,45,255,.6) 66%,transparent 76%),radial-gradient(44vmax 44vmax at 70% 90%,#ff4d2e,rgba(209,42,106,.5) 58%,transparent 74%)}
+@keyframes d2{to{transform:translate3d(6%,-5%,0) scale(1.12)}}
 .bgnum{position:absolute;inset-inline-end:-2vw;top:8vh;font-size:min(62vw,420px);font-weight:200;line-height:1;color:rgba(150,200,255,.055);pointer-events:none;user-select:none;font-variant-numeric:tabular-nums;will-change:transform}
 .dhead{position:relative;z-index:2;display:flex;align-items:center;gap:12px;padding:calc(var(--sat) + 14px) 16px 8px}
 .iconbtn{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;transition:transform .5s var(--spring)}
@@ -118,12 +128,13 @@ body.lock .orb{animation-play-state:paused}
 .iconbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .dhead h2{margin:0;font-size:22px;font-weight:500;flex:1}
 .dots{position:relative;display:flex;padding:0 8px;border-radius:99px}
-.dots button{position:relative;z-index:1;padding:12px 3px}
+.dots button{position:relative;z-index:1;padding:14px 4px}
 .dots button::after{content:"";display:block;width:6px;height:6px;border-radius:50%;background:var(--faint);transition:all .5s var(--spring)}
 .dots .on::after{background:#fff;transform:scale(1.2)}
-.lens{position:absolute;z-index:0;left:0;top:50%;width:26px;height:22px;margin-top:-11px;border-radius:99px;pointer-events:none;will-change:transform;
-  background:linear-gradient(160deg,rgba(255,255,255,.4),rgba(255,255,255,.1));
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),inset 1px 1px 1px rgba(255,255,255,.8),0 0 14px rgba(143,220,255,.55),0 6px 12px -4px rgba(0,0,0,.5)}
+.lens{position:absolute;z-index:0;left:0;top:50%;width:36px;height:36px;margin-top:-18px;border-radius:50%;pointer-events:none;will-change:transform;
+  background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.55),rgba(255,255,255,.08) 55%,rgba(255,255,255,.16));
+  -webkit-backdrop-filter:blur(1px) saturate(2) brightness(1.25);backdrop-filter:blur(1px) saturate(2) brightness(1.25);
+  box-shadow:inset 0 0 0 1.2px rgba(255,255,255,.7),inset 2px 3px 3px rgba(255,255,255,.7),inset -2px -3px 4px rgba(255,255,255,.25),0 0 16px rgba(255,255,255,.3),0 8px 16px -4px rgba(0,0,0,.55)}
 .dscroll{position:relative;z-index:1;flex:1;overflow-y:auto;overscroll-behavior:contain;padding:8px 16px calc(var(--sab) + 40px)}
 .dbody{max-width:1000px;margin:0 auto;display:grid;gap:16px}
 .side{display:grid;gap:12px}
