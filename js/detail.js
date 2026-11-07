@@ -3,7 +3,7 @@
 App.detail = (() => {
   const { $, pad, ago, processImage, tick } = App.utils, S = App.store;
   const detail = $('#detail'), body = $('#dbody'), file = $('#file'), toastEl = $('#toast'), scroller = $('#dscroll'), bg = $('#bgnum');
-  let cur = -1, viewUrl = null, pushed = false, toastT, busy = false; const seqs = {};
+  let cur = -1, lastX = null, viewUrl = null, pushed = false, toastT, busy = false; const seqs = {};
   const ICON = {
     edit: '<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>',
     trash: '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>'
@@ -15,6 +15,16 @@ App.detail = (() => {
     toastEl.textContent = msg; toastEl.classList.toggle('warn', !!opt.warn);
     if (opt.action) { const b = document.createElement('button'); b.textContent = opt.action.label; b.onclick = () => { opt.action.fn(); toastEl.classList.remove('show'); }; toastEl.append(b); }
     toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), opt.action ? 4500 : 1300);
+  }
+  // عدسة زجاجية بتنزلق بين النقط وبتتمطّط أثناء الحركة (زي سويتش الفيديو) — transform بس = خفيفة
+  function lens(anim) {
+    const d = $('#dots'), l = d.querySelector('.lens'), b = d.children[cur]; if (!l || !b || detail.hidden) return;
+    const x = b.offsetLeft + b.offsetWidth / 2 - 13; l.style.transform = `translateX(${x}px)`;
+    if (anim && lastX !== null && lastX !== x) l.animate([
+      { transform: `translateX(${lastX}px) scale(1,1)` },
+      { transform: `translateX(${(lastX + x) / 2}px) scale(${1 + Math.min(Math.abs(x - lastX) / 36, 1.3)},.8)`, offset: .45 },
+      { transform: `translateX(${x}px) scale(1,1)` }], { duration: 430, easing: 'cubic-bezier(.34,1.3,.64,1)' });
+    lastX = x;
   }
   const stamp = () => { const e = $('#stamp'); if (e && cur >= 0) e.textContent = ago(S.shelves[cur].updatedAt); };
 
@@ -49,7 +59,7 @@ App.detail = (() => {
   function render() {
     const s = S.shelves[cur];
     $('#dtitle').textContent = 'رف ' + pad(cur); bg.textContent = pad(cur);
-    $('#dots').innerHTML = S.shelves.map((_, i) => `<button data-i="${i}" class="${i === cur ? 'on' : ''}" aria-label="رف ${pad(i)}"></button>`).join('');
+    $('#dots').innerHTML = S.shelves.map((_, i) => `<button data-i="${i}" class="${i === cur ? 'on' : ''}" aria-label="رف ${pad(i)}"></button>`).join('') + '<i class="lens"></i>';
     body.innerHTML = `<figure class="frame glass rim" id="frame"></figure><div class="side"><label class="notes glass rim"><span>الوصف</span>
       <textarea id="notes" placeholder="أضف ملاحظة عن محتويات الرف&#10;مثال: 12 علبة من النوع A، 3 علب ناقصة"></textarea></label><p class="stamp" id="stamp"></p></div>`;
     const t = $('#notes'); t.value = s.description;
@@ -65,9 +75,9 @@ App.detail = (() => {
   const rectClip = r => `inset(${Math.max(r.top, 0)}px ${Math.max(innerWidth - r.right, 0)}px ${Math.max(innerHeight - r.bottom, 0)}px ${Math.max(r.left, 0)}px round 30px)`;
   function open(id, card) {
     if (busy || !detail.hidden) return; lock(420); tick(8);
-    cur = id; render();
+    cur = id; lastX = null; render();
     const r = card.getBoundingClientRect();
-    document.body.classList.add('lock'); detail.hidden = false;
+    document.body.classList.add('lock'); detail.hidden = false; lens(false);
     detail.style.transition = 'none'; detail.style.clipPath = rectClip(r); detail.style.opacity = '0'; body.style.opacity = '0'; body.style.transform = 'translateY(18px)';
     void detail.offsetWidth;
     detail.style.transition = 'clip-path .45s var(--out), opacity .15s'; detail.style.clipPath = 'inset(0 0 0 0 round 0px)'; detail.style.opacity = '1';
@@ -87,13 +97,14 @@ App.detail = (() => {
   function nav(dir) {
     const n = cur + dir;
     if (n < 0 || n >= S.shelves.length) { body.animate([{ transform: 'none' }, { transform: `translateX(${dir * -12}px)` }, { transform: 'none' }], { duration: 260, easing: 'ease-out' }); return; }
-    cur = n; render(); scroller.scrollTop = 0; tick(6);
+    cur = n; render(); lens(true); scroller.scrollTop = 0; tick(6);
     body.animate([{ opacity: 0, transform: `translateX(${dir * -34}px) scale(.97)` }, { opacity: 1, transform: 'none' }], { duration: 340, easing: 'cubic-bezier(.2,.9,.25,1)' });
   }
 
   function bind() {
     $('#back').addEventListener('click', requestClose);
     $('#dots').addEventListener('click', e => { const b = e.target.closest('button'); if (b) nav(+b.dataset.i - cur); });
+    window.addEventListener('resize', () => lens(false));
     window.addEventListener('popstate', () => { if (!detail.hidden) doClose(); });
 
     // ---- الإيماءات (آمنة مع الزوم) ----
