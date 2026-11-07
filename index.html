@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#060a11">
+<meta name="theme-color" content="#050722">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,7 +17,7 @@
 /* ================= tokens ================= */
 :root{
   --text:#eaf2fc; --dim:#93a7c2; --faint:#5f7390;
-  --accent:#7fd6ff; --accent-soft:rgba(127,214,255,.16); --warn:#e8c26a;
+  --accent:#8fdcff; --orange:#ff8a3d; --accent-soft:rgba(127,214,255,.16); --warn:#e8c26a;
   --out:cubic-bezier(.2,.9,.25,1);
   --spring:cubic-bezier(.34,1.45,.64,1);
   --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px);
@@ -26,7 +26,7 @@
 @supports (transition-timing-function:linear(0,1)){:root{--spring:linear(0,.009,.035 2.1%,.141,.281 6.7%,.723 12.9%,.938 16.7%,1.017,1.077,1.121,1.149 24.3%,1.159,1.163,1.161,1.154 29.9%,1.129 32.8%,1.051 39.6%,1.017 43.1%,.991,.977 51%,.974 53.8%,.975 57.1%,.997 69.8%,1.003 76.9%,1)}}
 *,*::before,*::after{box-sizing:inherit;-webkit-tap-highlight-color:transparent}
 html,body{margin:0}
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:#060a11}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:#050722}
 body{min-height:100dvh;color:var(--text);overflow-x:hidden;
   font-family:'Readex Pro',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif}
 body.lock{overflow:hidden}
@@ -34,19 +34,23 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 /* ================= الخلفية: أضواء بتتحرك ببطء (transform فقط = خفيفة) ================= */
-.ambient{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:linear-gradient(180deg,#060a11,#0b1424)}
-.orb{position:absolute;border-radius:50%;width:70vmax;height:70vmax;will-change:transform;animation:drift 30s ease-in-out infinite alternate}
-.o1{background:radial-gradient(circle,rgba(56,140,255,.5),transparent 62%);top:-30vmax;inset-inline-end:-26vmax}
-.o2{background:radial-gradient(circle,rgba(20,205,215,.36),transparent 62%);bottom:-34vmax;inset-inline-start:-30vmax;animation-duration:38s;animation-delay:-9s}
-.o3{background:radial-gradient(circle,rgba(140,95,255,.3),transparent 62%);top:28vh;inset-inline-start:-42vmax;width:60vmax;height:60vmax;animation-duration:46s;animation-delay:-16s}
+.ambient{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:linear-gradient(180deg,#050722,#0b1450 60%,#08103a)}
+.orb{position:absolute;border-radius:50%;width:72vmax;height:72vmax;will-change:transform;animation:drift 30s ease-in-out infinite alternate}
+.o1{background:radial-gradient(circle,rgba(36,104,255,.7),transparent 62%);top:-30vmax;inset-inline-end:-26vmax}
+.o2{background:radial-gradient(circle,rgba(150,80,255,.55),transparent 62%);bottom:-30vmax;inset-inline-start:-30vmax;animation-duration:38s;animation-delay:-9s}
+.o3{background:radial-gradient(circle,rgba(255,110,40,.5),transparent 62%);top:34vh;inset-inline-end:-46vmax;width:58vmax;height:58vmax;animation-duration:46s;animation-delay:-16s}
+.o4{background:radial-gradient(circle,rgba(20,200,255,.4),transparent 62%);top:6vh;inset-inline-start:-40vmax;width:52vmax;height:52vmax;animation-duration:52s;animation-delay:-24s}
 @keyframes drift{to{transform:translate3d(-12vmax,10vmax,0) scale(1.15)}}
 body.lock .orb{animation-play-state:paused}
 
 /* ================= Liquid Glass ================= */
-.glass{position:relative;background:rgba(255,255,255,.055);
-  -webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),inset 2px 2px 1px -1px rgba(255,255,255,.5),inset -2px -2px 1px -1px rgba(255,255,255,.22),
-    inset 0 -12px 20px -12px rgba(255,255,255,.12),0 12px 30px -12px rgba(0,0,0,.65)}
+.glass{position:relative;background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(255,255,255,.04) 45%,rgba(255,255,255,.09));
+  -webkit-backdrop-filter:blur(22px) saturate(1.8);backdrop-filter:blur(22px) saturate(1.8);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.15),inset 1.5px 1.5px 1px -1px rgba(255,255,255,.75),inset -1.5px -1.5px 1px -1px rgba(255,255,255,.32),
+    inset 0 -14px 22px -14px rgba(255,255,255,.18),0 18px 40px -16px rgba(0,0,0,.55),0 4px 14px -6px rgba(0,0,0,.35)}
+/* الألواح الكبيرة: بلور أخف عشان الأداء */
+.frame.glass,.notes.glass{-webkit-backdrop-filter:blur(14px) saturate(1.7);backdrop-filter:blur(14px) saturate(1.7)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass{background:rgba(40,52,120,.72)}}
 /* حافة لامعة بتتبع اتجاه الإضاءة (--ang) */
 .rim::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.2px;pointer-events:none;opacity:.75;
   background:conic-gradient(from var(--ang,215deg),rgba(255,255,255,.95),rgba(255,255,255,.04) 24%,rgba(255,255,255,.5) 50%,rgba(255,255,255,.04) 76%,rgba(255,255,255,.95));
@@ -60,7 +64,7 @@ body.lock .orb{animation-play-state:paused}
   padding:calc(var(--sat) + 10px) 16px 12px;pointer-events:none}
 .bar>*{pointer-events:auto}
 .bar-bg{position:absolute;inset:0;z-index:-1;opacity:0;transition:opacity .35s;pointer-events:none;
-  background:linear-gradient(rgba(6,10,17,.75),rgba(6,10,17,0));-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);
+  background:linear-gradient(rgba(5,7,34,.78),rgba(5,7,34,0));-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);
   -webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
 .bar-title{font-weight:500;font-size:17px;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .5s var(--spring)}
 .scrolled .bar-bg{opacity:1}.scrolled .bar-title{opacity:1;transform:none}
@@ -104,19 +108,22 @@ body.lock .orb{animation-play-state:paused}
 @keyframes enter{from{opacity:0;transform:translateY(22px) scale(.96)}}
 
 /* ================= شاشة الرف ================= */
-.detail{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;overflow:hidden;will-change:clip-path;background:linear-gradient(180deg,#0a111d,#060a11)}
+.detail{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;overflow:hidden;will-change:clip-path;background:linear-gradient(180deg,#0a1042,#050722)}
 .detail[hidden]{display:none}
-.detail::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(60vmax 40vmax at 80% 0%,rgba(60,120,200,.28),transparent 60%),radial-gradient(50vmax 40vmax at 0% 100%,rgba(30,180,200,.14),transparent 60%)}
+.detail::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(60vmax 44vmax at 85% 0%,rgba(40,110,255,.5),transparent 62%),radial-gradient(54vmax 44vmax at 0% 100%,rgba(255,110,40,.34),transparent 62%),radial-gradient(48vmax 40vmax at 0% 30%,rgba(150,80,255,.3),transparent 62%)}
 .bgnum{position:absolute;inset-inline-end:-2vw;top:8vh;font-size:min(62vw,420px);font-weight:200;line-height:1;color:rgba(150,200,255,.055);pointer-events:none;user-select:none;font-variant-numeric:tabular-nums;will-change:transform}
 .dhead{position:relative;z-index:2;display:flex;align-items:center;gap:12px;padding:calc(var(--sat) + 14px) 16px 8px}
 .iconbtn{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;transition:transform .5s var(--spring)}
 .iconbtn:active{transform:scale(.86);transition-duration:.1s}
 .iconbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .dhead h2{margin:0;font-size:22px;font-weight:500;flex:1}
-.dots{display:flex;padding:0 8px;border-radius:99px}
-.dots button{padding:12px 3px}
+.dots{position:relative;display:flex;padding:0 8px;border-radius:99px}
+.dots button{position:relative;z-index:1;padding:12px 3px}
 .dots button::after{content:"";display:block;width:6px;height:6px;border-radius:50%;background:var(--faint);transition:all .5s var(--spring)}
-.dots .on::after{width:20px;border-radius:6px;background:var(--accent);box-shadow:0 0 10px rgba(127,214,255,.6)}
+.dots .on::after{background:#fff;transform:scale(1.2)}
+.lens{position:absolute;z-index:0;left:0;top:50%;width:26px;height:22px;margin-top:-11px;border-radius:99px;pointer-events:none;will-change:transform;
+  background:linear-gradient(160deg,rgba(255,255,255,.4),rgba(255,255,255,.1));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),inset 1px 1px 1px rgba(255,255,255,.8),0 0 14px rgba(143,220,255,.55),0 6px 12px -4px rgba(0,0,0,.5)}
 .dscroll{position:relative;z-index:1;flex:1;overflow-y:auto;overscroll-behavior:contain;padding:8px 16px calc(var(--sab) + 40px)}
 .dbody{max-width:1000px;margin:0 auto;display:grid;gap:16px}
 .side{display:grid;gap:12px}
@@ -157,7 +164,7 @@ body.lock .orb{animation-play-state:paused}
   <feDisplacementMap in="b" in2="map" scale="34" xChannelSelector="R" yChannelSelector="G"/>
 </filter></defs></svg>
 
-<div class="ambient"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div class="ambient"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="orb o4"></div></div>
 
 <header class="bar">
   <div class="bar-bg"></div>
