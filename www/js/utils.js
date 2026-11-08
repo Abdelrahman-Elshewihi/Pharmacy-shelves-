@@ -43,7 +43,8 @@ App.utils = (() => {
     if (!blob) { urls.delete(key); return null; }
     const url = URL.createObjectURL(blob); urls.set(key, { blob, url }); return url;
   }
-  const tick = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch {} }; // اهتزاز خفيف
+  const hap = () => (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) || null;
+  const tick = ms => { try { const h = hap(); if (h) h.impact({ style: ms > 10 ? 'MEDIUM' : 'LIGHT' }); else if (navigator.vibrate) navigator.vibrate(ms); } catch {} };
   const light = (c, x, y) => { const r = c.getBoundingClientRect(); const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2);
     c.style.setProperty('--mx', (x - r.left) + 'px'); c.style.setProperty('--my', (y - r.top) + 'px'); c.style.setProperty('--ang', (Math.atan2(dy, dx) * 180 / Math.PI + 90) + 'deg'); };
   return { $, pad, el, ago, processImage, urlFor, tick, light };

@@ -17,7 +17,7 @@ App.card = (() => {
   }
   function create(s, i = 0, instant) {
     const [cls, label] = status(s), u = urlFor('t' + s.id, s.thumb || s.image), d = s.description.trim();
-    const c = el(`<button class="card rim ${instant ? '' : 'enter'}" data-id="${s.id}" style="--i:${i}" aria-label="رف ${pad(s.id)}">
+    const c = el(`<button class="card ${u ? 'has' : ''} ${instant ? '' : 'enter'}" data-id="${s.id}" style="--i:${i}" aria-label="رف ${pad(s.id)}">
       <div class="media">${u ? '' : '<div class="ph"><i></i><i></i><i></i></div>'}</div><div class="scrim"></div>
       <span class="num">${pad(s.id)}</span><span class="status ${cls}"><b></b>${label}</span>
       <div class="meta"><p></p><small></small></div></button>`);
@@ -46,15 +46,12 @@ App.card = (() => {
     scr.set(0, false); addEventListener('resize', () => scr.set(cur, false));
     const follow = () => {   // العدسة بتمشي مع الكارت اللي قدامك وانت بتسكرول
       if (scr.dragging() || Date.now() < lockUntil || document.body.classList.contains('lock')) return;
-      const k = list.children, mid = innerHeight / 2; let b = 0, bd = 1e9;
-      if (scrollY >= 30) { if (innerHeight + scrollY >= document.documentElement.scrollHeight - 30) b = k.length - 1; else for (let i = 0; i < k.length; i++) { const r = k[i].getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - mid); if (d < bd) { bd = d; b = i; } } }
+      const k = list.children, mid = scrollY + innerHeight / 2; let b = 0, bd = 1e9;
+      if (scrollY >= 30) { if (innerHeight + scrollY >= document.documentElement.scrollHeight - 30) b = k.length - 1; else for (let i = 0; i < k.length; i++) { const d = Math.abs(k[i].offsetTop + k[i].offsetHeight / 2 - mid); if (d < bd) { bd = d; b = i; } } }
       if (b !== cur) { cur = b; scr.set(b, true); }
     };
     list.addEventListener('click', e => { const c = e.target.closest('.card'); if (c) App.detail.open(+c.dataset.id, c); });
-    const lit = e => { const c = e.target.closest('.card'); if (c) { light(c, e.clientX, e.clientY); c.classList.add('lit'); } };
-    list.addEventListener('pointerdown', lit); list.addEventListener('pointermove', lit);
-    ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => list.addEventListener(ev, e => { const c = e.target.closest && e.target.closest('.card'); if (c) c.classList.remove('lit'); }, true));
-    let t = 0; addEventListener('scroll', () => { if (t) return; t = 1; requestAnimationFrame(() => { t = 0; document.documentElement.classList.toggle('scrolled', scrollY > 70); follow(); }); }, { passive: true });
+    let t = 0; addEventListener('scroll', () => { if (t) return; t = 1; requestAnimationFrame(() => { t = 0; document.documentElement.classList.toggle('scrolled', scrollY > 70); list.style.setProperty('--sw', Math.sin(scrollY / 260) * 240); follow(); }); }, { passive: true });
   }
   return { create, refresh, mount };
 })();

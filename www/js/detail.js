@@ -27,8 +27,8 @@ App.detail = (() => {
     }
     viewUrl = URL.createObjectURL(src);
     f.innerHTML = `<div class="inner"><img alt="صورة رف ${pad(cur)}"></div><div class="tools">
-      <button class="iconbtn glass rim" id="edit" aria-label="تغيير الصورة">${ICON.edit}</button>
-      <button class="iconbtn glass rim" id="del" aria-label="حذف الصورة">${ICON.trash}</button></div>`;
+      <button class="iconbtn glass rim blur" id="edit" aria-label="تغيير الصورة">${ICON.edit}</button>
+      <button class="iconbtn glass rim blur" id="del" aria-label="حذف الصورة">${ICON.trash}</button></div>`;
     f.querySelector('img').src = viewUrl;
     $('#edit').onclick = () => file.click();
     $('#del').onclick = () => {
@@ -63,15 +63,16 @@ App.detail = (() => {
     if (id === cur && !detail.hidden) { toast(ok ? '✓ تم الحفظ' : 'التخزين مش متاح — البيانات مؤقتة لحد ما تقفل الصفحة', { warn: !ok }); stamp(); }
   });
 
+  const tf = r => `translate(${r.left + r.width / 2 - innerWidth / 2}px,${r.top + r.height / 2 - innerHeight / 2}px) scale(${Math.max(r.width / innerWidth, .25)})`;
   const rectClip = r => `inset(${Math.max(r.top, 0)}px ${Math.max(innerWidth - r.right, 0)}px ${Math.max(innerHeight - r.bottom, 0)}px ${Math.max(r.left, 0)}px round 30px)`;
   function open(id, card) {
     if (busy || !detail.hidden) return; lock(420); tick(8);
     cur = id; render();
     const r = card.getBoundingClientRect();
     document.body.classList.add('lock'); detail.hidden = false; scr.set(cur, false);
-    detail.style.transition = 'none'; detail.style.clipPath = rectClip(r); detail.style.opacity = '0'; body.style.opacity = '0'; body.style.transform = 'translateY(18px)';
+    detail.style.opacity = ''; detail.style.transform = ''; body.style.opacity = '0'; body.style.transform = 'translateY(18px)';
     void detail.offsetWidth;
-    detail.style.transition = 'clip-path .45s var(--out), opacity .15s'; detail.style.clipPath = 'inset(0 0 0 0 round 0px)'; detail.style.opacity = '1';
+    detail.animate([{ transform: tf(r), opacity: 0 }, { opacity: 1, offset: .55 }, { transform: 'none', opacity: 1 }], { duration: 420, easing: 'cubic-bezier(.2,.9,.25,1)' });
     body.style.transition = 'opacity .3s .12s, transform .6s .1s var(--out)'; body.style.opacity = '1'; body.style.transform = 'none';
     try { history.pushState({ shelf: id }, ''); pushed = true; } catch { pushed = false; }
   }
@@ -82,8 +83,9 @@ App.detail = (() => {
     const card = document.querySelector(`.card[data-id="${cur}"]`); card.scrollIntoView({ block: 'nearest' });
     const r = card.getBoundingClientRect();
     body.style.transition = 'opacity .12s, transform .3s'; body.style.opacity = '0'; body.style.transform = 'translateY(10px)';
-    detail.style.transition = 'clip-path .38s var(--out), opacity .2s .18s'; detail.style.clipPath = rectClip(r); detail.style.opacity = '0';
-    setTimeout(() => { detail.hidden = true; document.body.classList.remove('lock'); if (viewUrl) { URL.revokeObjectURL(viewUrl); viewUrl = null; } cur = -1; }, 400);
+    const from = detail.style.transform || 'none'; detail.style.transform = '';
+    detail.animate([{ transform: from, opacity: 1 }, { opacity: 1, offset: .45 }, { transform: tf(r), opacity: 0 }], { duration: 360, easing: 'cubic-bezier(.3,.8,.3,1)', fill: 'forwards' });
+    setTimeout(() => { detail.getAnimations().forEach(a => a.cancel()); detail.hidden = true; document.body.classList.remove('lock'); if (viewUrl) { URL.revokeObjectURL(viewUrl); viewUrl = null; } cur = -1; }, 400);
   }
   function nav(dir) {
     const n = cur + dir;
@@ -104,28 +106,67 @@ App.detail = (() => {
     window.addEventListener('resize', () => { if (!detail.hidden) scr.set(cur, false); });
     window.addEventListener('popstate', () => { if (!detail.hidden) doClose(); });
 
-    // ---- الإيماءات (آمنة مع الزوم) ----
-    let t0 = null, multi = false;
+    // ---- الإيماءات: الشاشة بتمشي مع صباعك حرفياً (يمين/شمال = تنقل، لتحت = رجوع). آمنة مع الزوم ----
+    let t0 = null, multi = false, mode = null, anim = false;
+    const SPR = 'cubic-bezier(.34,1.4,.64,1)', OUT = 'cubic-bezier(.2,.9,.25,1)';
+    function dropDrag() {   // رجّع الشاشة لمكانها بنعومة
+      if (mode === 'h') { const f = body.style.transform || 'none', o = body.style.opacity || 1; body.style.transform = ''; body.style.opacity = ''; body.style.transition = '';
+        body.animate([{ transform: f, opacity: o }, { transform: 'none', opacity: 1 }], { duration: 420, easing: SPR }); }
+      else if (mode === 'v') { const f = detail.style.transform || 'none'; detail.style.transform = '';
+        detail.animate([{ transform: f }, { transform: 'none' }], { duration: 380, easing: SPR }); }
+      mode = null;
+    }
+    function commitH(dx) {
+      const n = cur + (dx < 0 ? 1 : -1), sg = dx < 0 ? -1 : 1; anim = true; mode = null;
+      const f = body.style.transform || 'none', o = +(body.style.opacity || 1);
+      body.style.transform = ''; body.style.transition = ''; body.style.opacity = '0';
+      const a = body.animate([{ transform: f, opacity: o }, { transform: `translate3d(${sg * innerWidth * .45}px,0,0)`, opacity: 0 }], { duration: 170, easing: 'cubic-bezier(.4,0,1,1)', fill: 'forwards' });
+      a.onfinish = () => {
+        a.cancel(); cur = n; render(); scr.set(cur, true); scroller.scrollTop = 0; body.style.opacity = ''; tick(6);
+        body.animate([{ transform: `translate3d(${-sg * 70}px,0,0) scale(.97)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 440, easing: OUT });
+        anim = false;
+      };
+    }
     detail.addEventListener('touchstart', e => {
-      if (e.touches.length > 1) { multi = true; t0 = null; return; }
-      if (multi) return;
-      if (e.target.closest('.dots')) { t0 = null; return; }   // سحب العدسة مش إيماءة تنقل
+      if (e.touches.length > 1) { multi = true; dropDrag(); t0 = null; return; }
+      t0 = null; if (multi || anim || busy || e.target.closest('.dots')) return;
       const t = e.touches[0];
-      t0 = { x: t.clientX, y: t.clientY, time: Date.now(), z: scale(), top: scroller.scrollTop <= 0, ta: !!e.target.closest('textarea'),
-             edge: t.clientX < 28 || t.clientX > innerWidth - 28 };
+      t0 = { x: t.clientX, y: t.clientY, lx: t.clientX, ly: t.clientY, lt: Date.now(), vx: 0, vy: 0, z: scale(), top: scroller.scrollTop <= 0,
+             ta: !!e.target.closest('textarea'), edge: t.clientX < 28 || t.clientX > innerWidth - 28, hit: false };
+      mode = null;
     }, { passive: true });
-    detail.addEventListener('touchmove', e => { if (e.touches.length > 1) { multi = true; t0 = null; } }, { passive: true });
-    detail.addEventListener('touchcancel', () => { t0 = null; multi = false; }, { passive: true });
+    detail.addEventListener('touchmove', e => {
+      if (e.touches.length > 1) { multi = true; dropDrag(); t0 = null; return; }
+      if (!t0) return;
+      if (scale() > 1.02 || Math.abs(scale() - t0.z) > .01) { dropDrag(); t0 = null; return; }   // زوم شغال: مفيش إيماءات
+      const t = e.touches[0], dx = t.clientX - t0.x, dy = t.clientY - t0.y, now = Date.now(), dt = Math.max(now - t0.lt, 1);
+      t0.vx = t0.vx * .6 + (t.clientX - t0.lx) / dt * .4; t0.vy = t0.vy * .6 + (t.clientY - t0.ly) / dt * .4; t0.lx = t.clientX; t0.ly = t.clientY; t0.lt = now;
+      if (!mode) {
+        if (t0.ta || t0.edge) return;
+        if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.6) mode = 'h';
+        else if (t0.top && dy > 14 && dy > Math.abs(dx) * 1.6) mode = 'v';
+        else return;
+        body.style.transition = 'none';
+      }
+      if (mode === 'h') {
+        const n = cur + (dx < 0 ? 1 : -1), lim = n < 0 || n >= S.shelves.length;
+        body.style.transform = `translate3d(${dx * (lim ? .22 : .9)}px,0,0)`; body.style.opacity = 1 - Math.min(Math.abs(dx) / (innerWidth * 1.2), .45);
+        if (!lim && !t0.hit && Math.abs(dx) > 90) { t0.hit = true; tick(5); }
+      } else {
+        const y = Math.max(dy, 0); detail.style.transform = `translate3d(0,${y * .92}px,0) scale(${1 - Math.min(y / 1700, .09)})`;
+        if (!t0.hit && y > 120) { t0.hit = true; tick(5); }
+      }
+    }, { passive: true });
+    detail.addEventListener('touchcancel', () => { dropDrag(); t0 = null; multi = false; }, { passive: true });
     detail.addEventListener('touchend', e => {
       if (e.touches.length > 0) return;
-      const wasMulti = multi; multi = false;
-      const s = t0; t0 = null;
-      if (wasMulti || !s || s.ta || s.edge || busy) return;
-      if (scale() > 1.02 || Math.abs(scale() - s.z) > .01) return;          // زوم شغال: مفيش إيماءات
-      if (Date.now() - s.time > 700) return;                                  // سحب بطيء = مش إيماءة
+      const wasMulti = multi; multi = false; const s = t0; t0 = null;
+      if (wasMulti || !s || !mode) { dropDrag(); return; }
       const t = e.changedTouches[0], dx = t.clientX - s.x, dy = t.clientY - s.y;
-      if (Math.abs(dx) > 80 && Math.abs(dx) > Math.abs(dy) * 1.8) nav(dx < 0 ? 1 : -1);
-      else if (s.top && dy > 130 && Math.abs(dx) < 55) requestClose();
+      if (mode === 'h') {
+        const n = cur + (dx < 0 ? 1 : -1), ok = n >= 0 && n < S.shelves.length && (Math.abs(dx) > 90 || (Math.abs(s.vx) > .5 && Math.abs(dx) > 28));
+        if (ok) commitH(dx); else dropDrag();
+      } else if (dy > 120 || (s.vy > .7 && dy > 40)) { mode = null; requestClose(); } else dropDrag();
     }, { passive: true });
 
     document.addEventListener('keydown', e => {
