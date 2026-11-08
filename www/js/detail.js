@@ -27,8 +27,8 @@ App.detail = (() => {
     }
     viewUrl = URL.createObjectURL(src);
     f.innerHTML = `<div class="inner"><img alt="صورة رف ${pad(cur)}"></div><div class="tools">
-      <button class="iconbtn glass rim blur" id="edit" aria-label="تغيير الصورة">${ICON.edit}</button>
-      <button class="iconbtn glass rim blur" id="del" aria-label="حذف الصورة">${ICON.trash}</button></div>`;
+      <button class="iconbtn glass" id="edit" aria-label="تغيير الصورة">${ICON.edit}</button>
+      <button class="iconbtn glass" id="del" aria-label="حذف الصورة">${ICON.trash}</button></div>`;
     f.querySelector('img').src = viewUrl;
     $('#edit').onclick = () => file.click();
     $('#del').onclick = () => {
@@ -51,7 +51,7 @@ App.detail = (() => {
     const s = S.shelves[cur];
     $('#dtitle').textContent = 'رف ' + pad(cur); bg.textContent = pad(cur);
     mark(cur);
-    body.innerHTML = `<figure class="frame glass rim" id="frame"></figure><div class="side"><label class="notes glass rim"><span>الوصف</span>
+    body.innerHTML = `<figure class="frame glass" id="frame"></figure><div class="side"><label class="notes glass"><span>الوصف</span>
       <textarea id="notes" placeholder="أضف ملاحظة عن محتويات الرف&#10;مثال: 12 علبة من النوع A، 3 علب ناقصة"></textarea></label><p class="stamp" id="stamp"></p></div>`;
     const t = $('#notes'); t.value = s.description;
     t.addEventListener('input', () => S.update(cur, { description: t.value }));
@@ -65,6 +65,7 @@ App.detail = (() => {
 
   const tf = r => `translate(${r.left + r.width / 2 - innerWidth / 2}px,${r.top + r.height / 2 - innerHeight / 2}px) scale(${Math.max(r.width / innerWidth, .25)})`;
   const rectClip = r => `inset(${Math.max(r.top, 0)}px ${Math.max(innerWidth - r.right, 0)}px ${Math.max(innerHeight - r.bottom, 0)}px ${Math.max(r.left, 0)}px round 30px)`;
+  let coverT = 0;
   function open(id, card) {
     if (busy || !detail.hidden) return; lock(420); tick(8);
     cur = id; render();
@@ -73,11 +74,13 @@ App.detail = (() => {
     detail.style.opacity = ''; detail.style.transform = ''; body.style.opacity = '0'; body.style.transform = 'translateY(18px)';
     void detail.offsetWidth;
     detail.animate([{ transform: tf(r), opacity: 0 }, { opacity: 1, offset: .55 }, { transform: 'none', opacity: 1 }], { duration: 420, easing: 'cubic-bezier(.2,.9,.25,1)' });
+    coverT = setTimeout(() => { if (!detail.hidden) document.body.classList.add('covered'); }, 480);
     body.style.transition = 'opacity .3s .12s, transform .6s .1s var(--out)'; body.style.opacity = '1'; body.style.transform = 'none';
     try { history.pushState({ shelf: id }, ''); pushed = true; } catch { pushed = false; }
   }
   function requestClose() { if (busy || detail.hidden) return; if (pushed) { try { history.back(); return; } catch {} } doClose(); }
   function doClose() {
+    clearTimeout(coverT); document.body.classList.remove('covered');
     if (detail.hidden || cur < 0) return; lock(420);
     S.flush(); pushed = false;
     const card = document.querySelector(`.card[data-id="${cur}"]`); card.scrollIntoView({ block: 'nearest' });

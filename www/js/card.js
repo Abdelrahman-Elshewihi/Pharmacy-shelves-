@@ -36,22 +36,37 @@ App.card = (() => {
     progress();
   }
   function mount() {
-    list.innerHTML = ''; App.store.shelves.forEach((s, i) => list.append(create(s, i)));
-    ptrack.innerHTML = App.store.shelves.map((_, i) => `<button data-i="${i}" aria-label="رف ${pad(i)}"></button>`).join('') + '<i class="lens"></i>'; progress();
-    let cur = 0, lockUntil = 0;
-    const go = i => { const c = list.children[i]; if (!c) return; cur = i; lockUntil = Date.now() + 900; const r = c.getBoundingClientRect();
-      scrollTo({ top: Math.max(0, scrollY + r.top - (innerHeight - r.height) / 2), behavior: 'smooth' }); };
-    scr = App.scrub.make(ptrack, { onPreview: go, onCommit: go });
-    ptrack.addEventListener('click', e => { if (e.detail === 0) { const b = e.target.closest('button'); if (b) go(+b.dataset.i); } });
-    scr.set(0, false); addEventListener('resize', () => scr.set(cur, false));
-    const follow = () => {   // العدسة بتمشي مع الكارت اللي قدامك وانت بتسكرول
-      if (scr.dragging() || Date.now() < lockUntil || document.body.classList.contains('lock')) return;
-      const k = list.children, mid = scrollY + innerHeight / 2; let b = 0, bd = 1e9;
-      if (scrollY >= 30) { if (innerHeight + scrollY >= document.documentElement.scrollHeight - 30) b = k.length - 1; else for (let i = 0; i < k.length; i++) { const d = Math.abs(k[i].offsetTop + k[i].offsetHeight / 2 - mid); if (d < bd) { bd = d; b = i; } } }
-      if (b !== cur) { cur = b; scr.set(b, true); }
+    const sh = App.store.shelves, n = sh.length;
+    list.innerHTML = ''; sh.forEach((s, i) => list.append(create(s, i)));
+    ptrack.innerHTML = sh.map((_, i) => `<button data-i="${i}" aria-label="رف ${pad(i)}"></button>`).join('') + '<i class="lens"></i>'; progress();
+    let maxY = 1, snapRaf = 0, sbar = false, tk = false;
+    const calc = () => { maxY = Math.max(1, document.documentElement.scrollHeight - innerHeight); };
+    const clampY = y => Math.min(Math.max(y, 0), maxY);
+    const stop = () => { if (snapRaf) { cancelAnimationFrame(snapRaf); snapRaf = 0; } };
+    const snapTo = i => {   // تمرير ناعم لنص الكارت (JS خفيف، فريم بفريم)
+      const c = list.children[i]; if (!c) return; calc(); stop();
+      const y0 = scrollY, y1 = clampY(c.offsetTop + c.offsetHeight / 2 - innerHeight / 2), t0 = performance.now(), d = Math.min(460, 180 + Math.abs(y1 - y0) * .22);
+      const f = t => { const k = Math.min((t - t0) / d, 1); scrollTo(0, y0 + (y1 - y0) * (1 - Math.pow(1 - k, 3))); snapRaf = k < 1 ? requestAnimationFrame(f) : 0; };
+      snapRaf = requestAnimationFrame(f);
     };
+    scr = App.scrub.make(ptrack, {
+      onMove: p => { stop(); calc(); scrollTo(0, clampY(p / (n - 1) * maxY)); },   // السحب = تمرير مباشر 1:1
+      onCommit: i => snapTo(i)
+    });
+    ptrack.addEventListener('click', e => { if (e.detail === 0) { const b = e.target.closest('button'); if (b) snapTo(+b.dataset.i); } });
     list.addEventListener('click', e => { const c = e.target.closest('.card'); if (c) App.detail.open(+c.dataset.id, c); });
-    let t = 0; addEventListener('scroll', () => { if (t) return; t = 1; requestAnimationFrame(() => { t = 0; document.documentElement.classList.toggle('scrolled', scrollY > 70); list.style.setProperty('--sw', Math.sin(scrollY / 260) * 240); follow(); }); }, { passive: true });
+    const onScroll = () => {
+      if (tk) return; tk = true;
+      requestAnimationFrame(() => {
+        tk = false; const y = scrollY, s = y > 70;
+        if (s !== sbar) { sbar = s; document.documentElement.classList.toggle('scrolled', s); }
+        if (!scr.dragging() && !document.body.classList.contains('lock')) scr.follow(clampY(y) / maxY * (n - 1));
+      });
+    };
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('touchstart', stop, { passive: true });
+    addEventListener('resize', () => { calc(); scr.set(0, false); onScroll(); });
+    calc(); scr.set(0, false);
   }
   return { create, refresh, mount };
 })();
