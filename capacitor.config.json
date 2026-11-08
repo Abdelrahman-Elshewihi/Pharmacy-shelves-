@@ -2,5 +2,8 @@
   "appId": "com.pharmacy.shelves",
   "appName": "أرفف الصيدلية",
   "webDir": "www",
-  "backgroundColor": "#03040c"
+  "backgroundColor": "#03040c",
+  "plugins": {
+    "StatusBar": { "overlaysWebView": false, "style": "DARK", "backgroundColor": "#03040c" }
+  }
 }
