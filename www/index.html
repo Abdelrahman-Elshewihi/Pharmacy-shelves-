@@ -34,28 +34,19 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 /* ================= الخلفية: أضواء بتتحرك ببطء (transform فقط = خفيفة) ================= */
-.ambient{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#03040c}
-.orb{position:absolute;border-radius:50%;will-change:transform;animation:drift 22s ease-in-out infinite alternate}
-.o1{width:80vmax;height:80vmax;left:-36vmax;top:8vh;--dx:26vmax;--dy:-14vh;
-  background:radial-gradient(circle at 32% 30%,#3df0ff 0,#2f7bff 36%,#5a3cff 58%,#7a2bff 64%,rgba(122,43,255,0) 72%)}
-.o2{width:70vmax;height:70vmax;right:-34vmax;top:-12vh;--dx:-22vmax;--dy:26vh;animation-duration:27s;animation-delay:-8s;
-  background:radial-gradient(circle at 60% 40%,#ffc21a 0,#ff8a1f 40%,#ff4d1f 62%,rgba(255,77,31,0) 72%)}
-.o3{width:64vmax;height:64vmax;right:-30vmax;bottom:-22vh;--dx:-30vmax;--dy:-26vh;animation-duration:31s;animation-delay:-14s;
-  background:radial-gradient(circle at 50% 50%,#ff5a2a 0,#ff3d2e 45%,#d12a6a 62%,rgba(209,42,106,0) 72%)}
-.o4{width:62vmax;height:62vmax;left:-24vmax;bottom:-26vh;--dx:24vmax;--dy:-22vh;animation-duration:35s;animation-delay:-20s;
-  background:radial-gradient(circle at 40% 40%,#22d3ff 0,#2563ff 45%,#6d2bff 64%,rgba(109,43,255,0) 72%)}
-@keyframes drift{to{transform:translate3d(var(--dx),var(--dy),0) scale(1.12)}}
-body.lock .orb{animation-play-state:paused}
-
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;transform:translateZ(0);background:
+  radial-gradient(72vmax 72vmax at -14% 40%,#38ecff 0,#2f72ff 34%,#5a3cff 52%,rgba(122,43,255,0) 68%),
+  radial-gradient(64vmax 64vmax at 108% 4%,#ffc21a 0,#ff8a1f 36%,#ff4d1f 56%,rgba(255,77,31,0) 68%),
+  radial-gradient(60vmax 60vmax at 112% 94%,#ff5a2a 0,#ff3d2e 40%,#d12a6a 58%,rgba(209,42,106,0) 70%),
+  radial-gradient(58vmax 58vmax at -10% 100%,#22d3ff 0,#2563ff 42%,#6d2bff 60%,rgba(109,43,255,0) 70%),#03040c}
+html{overscroll-behavior:none}
 /* ================= Liquid Glass ================= */
 .glass{position:relative;background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(255,255,255,.04) 45%,rgba(255,255,255,.09));
-  -webkit-backdrop-filter:blur(22px) saturate(1.8);backdrop-filter:blur(22px) saturate(1.8);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.15),inset 1.5px 1.5px 1px -1px rgba(255,255,255,.75),inset -1.5px -1.5px 1px -1px rgba(255,255,255,.32),
     inset 0 -14px 22px -14px rgba(255,255,255,.18),0 18px 40px -16px rgba(0,0,0,.55),0 4px 14px -6px rgba(0,0,0,.35)}
 /* الألواح الكبيرة: بلور أخف عشان الأداء */
-.frame.glass,.notes.glass{-webkit-backdrop-filter:blur(14px) saturate(1.7);backdrop-filter:blur(14px) saturate(1.7)}
-@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass{background:rgba(40,52,120,.72)}}
 /* حافة لامعة بتتبع اتجاه الإضاءة (--ang) */
+.blur{-webkit-backdrop-filter:blur(14px) saturate(1.6);backdrop-filter:blur(14px) saturate(1.6)}
 .rim::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.2px;pointer-events:none;opacity:.75;
   background:conic-gradient(from var(--ang,215deg),rgba(255,255,255,.95),rgba(255,255,255,.04) 24%,rgba(255,255,255,.5) 50%,rgba(255,255,255,.04) 76%,rgba(255,255,255,.95));
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
@@ -66,8 +57,7 @@ body.lock .orb{animation-play-state:paused}
   padding:calc(var(--sat) + 10px) 16px 12px;pointer-events:none}
 .bar>*{pointer-events:auto}
 .bar-bg{position:absolute;inset:0;z-index:-1;opacity:0;transition:opacity .35s;pointer-events:none;
-  background:linear-gradient(rgba(3,4,12,.7),rgba(3,4,12,0));-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);
-  -webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+  background:linear-gradient(rgba(3,4,12,.62),rgba(3,4,12,0))}
 .bar-title{font-weight:500;font-size:17px;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .5s var(--spring)}
 .scrolled .bar-bg{opacity:1}.scrolled .bar-title{opacity:1;transform:none}
 .pill{display:flex;align-items:center;gap:2px;padding-inline:14px 6px;border-radius:99px;font-size:13px;color:var(--text)}
@@ -88,22 +78,18 @@ body.lock .orb{animation-play-state:paused}
 .list{display:grid;gap:14px;margin-top:26px;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))}
 
 .card{position:relative;display:block;width:100%;height:200px;text-align:start;overflow:hidden;isolation:isolate;border-radius:30px;
-  background:linear-gradient(150deg,rgba(255,255,255,.2),rgba(255,255,255,.04) 50%,rgba(255,255,255,.1));
-  -webkit-backdrop-filter:blur(12px) saturate(1.7) brightness(1.05);backdrop-filter:blur(12px) saturate(1.7) brightness(1.05);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),inset 2px 2px 1px -1px rgba(255,255,255,.5),inset -2px -2px 1px -1px rgba(255,255,255,.2),0 20px 40px -18px rgba(0,0,0,.75);
+  background:linear-gradient(150deg,rgba(255,255,255,.24),rgba(255,255,255,.06) 50%,rgba(255,255,255,.13));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),inset 2px 2px 1px -1px rgba(255,255,255,.6),inset -2px -2px 1px -1px rgba(255,255,255,.25),0 18px 34px -18px rgba(0,0,0,.7);
   transition:transform .55s var(--spring)}
-.card:active{transform:scale(.96);transition-duration:.12s}
-.card::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .3s;
-  background:radial-gradient(240px circle at var(--mx,50%) var(--my,0%),rgba(160,220,255,.22),transparent 65%)}
-.card:has(.media img) .scrim{opacity:1}
+.card:active{transform:scale(.965);transition-duration:.14s}
+.card::after{content:"";position:absolute;inset:-10% -70%;z-index:3;pointer-events:none;will-change:transform;
+  background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.22) 50%,transparent 58%);transform:translate3d(calc(var(--sw,0)*1px),0,0)}
+.card.has .scrim{opacity:1}
 .card .meta,.card .num{text-shadow:0 1px 14px rgba(0,0,0,.35)}
-.card.lit::after{opacity:1}
-@media (hover:hover){.card:hover::after{opacity:1}}
-.card::before{z-index:4}
+.card.rim::before{display:none}
 .card .media{position:absolute;inset:0;z-index:0}
 .card .media img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .4s}
 .card .media img.on{opacity:1}
-.card:has(.media img){-webkit-backdrop-filter:none;backdrop-filter:none}
 .card .scrim{opacity:0;position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(5,9,16,.9) 0%,rgba(5,9,16,.35) 55%,rgba(5,9,16,.08) 100%)}
 .ph{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;gap:14px;padding-inline:0 26px}
 .ph i{display:block;height:5px;border-radius:5px;background:linear-gradient(90deg,rgba(255,255,255,.3),transparent)}
@@ -123,11 +109,10 @@ body.lock .orb{animation-play-state:paused}
 @keyframes enter{from{opacity:0;transform:translateY(22px) scale(.96)}}
 
 /* ================= شاشة الرف ================= */
-.detail{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;overflow:hidden;will-change:clip-path;background:#03040c}
+.detail{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;overflow:hidden;will-change:transform,opacity;background:#03040c}
 .detail[hidden]{display:none}
-.detail::before{content:"";position:absolute;inset:-20%;pointer-events:none;will-change:transform;animation:d2 30s ease-in-out infinite alternate;
+.detail::before{content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(40vmax 40vmax at 78% 12%,#ff9a1f,rgba(255,90,30,.5) 55%,transparent 72%),radial-gradient(46vmax 46vmax at 18% 38%,#2fd5ff,#3a5bff 50%,rgba(110,45,255,.6) 66%,transparent 76%),radial-gradient(44vmax 44vmax at 70% 90%,#ff4d2e,rgba(209,42,106,.5) 58%,transparent 74%)}
-@keyframes d2{to{transform:translate3d(6%,-5%,0) scale(1.12)}}
 .bgnum{position:absolute;inset-inline-end:-2vw;top:8vh;font-size:min(62vw,420px);font-weight:200;line-height:1;color:rgba(150,200,255,.055);pointer-events:none;user-select:none;font-variant-numeric:tabular-nums;will-change:transform}
 .dhead{position:relative;z-index:2;display:flex;align-items:center;gap:12px;padding:calc(var(--sat) + 14px) 16px 8px}
 .iconbtn{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;transition:transform .5s var(--spring)}
@@ -166,12 +151,12 @@ body.lock .orb{animation-play-state:paused}
 </style>
 </head>
 <body>
-<div class="ambient"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="orb o4"></div></div>
+<div class="ambient"></div>
 
 <header class="bar">
   <div class="bar-bg"></div>
   <span class="bar-title">أرفف الصيدلية</span>
-  <div class="pill glass rim" id="progress"><span class="cnt" id="cnt" dir="ltr"></span><div class="track" id="ptrack"></div></div>
+  <div class="pill glass rim blur" id="progress"><span class="cnt" id="cnt" dir="ltr"></span><div class="track" id="ptrack"></div></div>
 </header>
 
 <main class="app">
@@ -184,11 +169,11 @@ body.lock .orb{animation-play-state:paused}
 
 <section class="detail" id="detail" hidden role="dialog" aria-modal="true">
   <div class="bgnum" id="bgnum" aria-hidden="true"></div>
-  <div class="toast glass rim" id="toast" role="status"></div>
+  <div class="toast glass rim blur" id="toast" role="status"></div>
   <div class="dhead">
-    <button class="iconbtn glass rim" id="back" aria-label="رجوع"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="iconbtn glass rim blur" id="back" aria-label="رجوع"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
     <h2 id="dtitle"></h2>
-    <div class="track dots glass rim" id="dots"></div>
+    <div class="track dots glass rim blur" id="dots"></div>
   </div>
   <div class="dscroll" id="dscroll"><div class="dbody" id="dbody"></div></div>
   <input type="file" id="file" accept="image/*" hidden>
